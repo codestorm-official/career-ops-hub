@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
     git \
+    nano \
     python3 \
     python3-full \
     tini \
@@ -28,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # 3. Setup Workspace & Clone Career-Ops
-WORKDIR /root/workspace
+WORKDIR /app
 RUN git clone https://github.com/santifer/career-ops.git . \
     && npm install
 
@@ -57,4 +58,4 @@ EXPOSE 7681
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Launch ttyd with Basic Auth and Writable Terminal
-CMD ["/bin/bash", "-c", "/usr/local/bin/ttyd --writable --interface 0.0.0.0 -p ${PORT:-7681} -c ${USERNAME:-admin}:${PASSWORD:-admin} /bin/bash -l"]
+CMD ["/bin/bash", "-c", "if [ -z \"$(ls -A /root/workspace)\" ]; then echo 'Initializing workspace...'; cp -r /app/. /root/workspace/; fi && cd /root/workspace && /usr/local/bin/ttyd --writable --interface 0.0.0.0 -p ${PORT:-7681} -c ${USERNAME:-admin}:${PASSWORD:-admin} /bin/bash -l"]

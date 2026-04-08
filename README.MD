@@ -5,7 +5,7 @@
 # 💼 CareerOps Hub
 **The Ultimate AI-Powered Job Search Command Center.**
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/template/career-ops-hub)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/careerops-hub?referralCode=asepsp)
 
 ## 📖 Description
 **CareerOps Hub** is a cloud-native central command station built upon the powerful [santifer/career-ops](https://github.com/santifer/career-ops) framework. It provides a dedicated, always-on environment to manage your entire job search lifecycle—from automated portal scanning to AI-driven CV tailoring—all accessible directly from your web browser.

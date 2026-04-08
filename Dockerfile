@@ -26,12 +26,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Install Claude Code CLI (Native Installer)
-RUN curl -fsSL https://claude.ai/install.sh | bash
+RUN npm install -g @anthropic-ai/claude-code
 
 # 3. Setup Workspace & Clone Career-Ops
-WORKDIR /app
-RUN git clone https://github.com/santifer/career-ops.git . \
-    && npm install
+WORKDIR /app_source
+RUN git clone https://github.com/santifer/career-ops.git . && npm install
 
 # 4. Install Playwright for PDF Generation (Chromium)
 RUN npx playwright install --with-deps chromium
@@ -48,14 +47,13 @@ RUN set -eux; \
     wget -qO /usr/local/bin/ttyd "$URL" && chmod +x /usr/local/bin/ttyd
 
 # 6. Final Configuration
-# Ensure user lands in the workspace with system info
+WORKDIR /root/workspace
 RUN echo "cd /root/workspace" >> /root/.bashrc && \
     echo "neofetch || true" >> /root/.bashrc
 
 EXPOSE 7681
 
-# Using tini to handle signals and prevent zombie processes
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Launch ttyd with Basic Auth and Writable Terminal
-CMD ["/bin/bash", "-c", "if [ -z \"$(ls -A /root/workspace)\" ]; then echo 'Initializing workspace...'; cp -r /app/. /root/workspace/; fi && cd /root/workspace && /usr/local/bin/ttyd --writable --interface 0.0.0.0 -p ${PORT:-7681} -c ${USERNAME:-admin}:${PASSWORD:-admin} /bin/bash -l"]
+CMD ["/bin/bash", "-c", "if [ ! -f /root/workspace/package.json ]; then echo 'Deploying CareerOps files...'; cp -a /app_source/. /root/workspace/; fi && cd /root/workspace && /usr/local/bin/ttyd --writable --interface 0.0.0.0 -p ${PORT:-7681} -c ${USERNAME:-admin}:${PASSWORD:-admin} /bin/bash -l"]
